@@ -30,6 +30,7 @@ python3 subparts/huffman.py
 #########################
 
 Utilisation du logiciel:
+
 Commencer par le haut de l'interface en choisissant si vous souhaitez le résultat sans visualisation des étapes avec le bouton radio "no step" ou avec les différentes étapes, matrice ou développement Huffman, avec le second bouton radio "with step".
 
 Vous avez ensuite le choix pour entrer votre séquence d'intérêt, soit directement dans le cadre prévu à cette effet pour de petites séquences, soit avec le bouton "Open file" pour choisir un fichier fasta ou txt.
