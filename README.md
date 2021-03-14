@@ -2,13 +2,13 @@
 
 #########################
 
-# LANCEMENT DU PROJET
+## LANCEMENT DU PROJET
 
 #########################
 
 Pour lancer l'interface du projet et accéder au logiciel:
 
-python3 Interface_project.py
+<strong>python3 Interface_project.py</strong>
 
 Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquences choisies celle de votre pdf de projet.
 
@@ -25,7 +25,7 @@ python3 subparts/huffman.py
 
 #########################
 
-# FONCTIONNEMENT
+## FONCTIONNEMENT
 
 #########################
 
@@ -48,7 +48,7 @@ Cependant une fois que vous avez enregistrer votre séquence avec les boutons En
 
 ########################
 
-# COMMENTAIRES 
+## COMMENTAIRES 
 
 ########################
 
