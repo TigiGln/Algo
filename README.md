@@ -2,7 +2,7 @@
 
 #########################
 
-##LANCEMENT DU PROJET
+# LANCEMENT DU PROJET
 
 #########################
 
@@ -25,7 +25,7 @@ python3 subparts/huffman.py
 
 #########################
 
-##FONCTIONNEMENT
+# FONCTIONNEMENT
 
 #########################
 
@@ -48,7 +48,7 @@ Cependant une fois que vous avez enregistrer votre séquence avec les boutons En
 
 ########################
 
-##COMMENTAIRES 
+# COMMENTAIRES 
 
 ########################
 
