@@ -8,7 +8,7 @@
 
 Pour lancer l'interface du projet et accéder au logiciel:
 
-<color = "red">python3 Interface_project.py</color>
+<color>python3 Interface_project.py</color>
 
 Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquences choisies celle de votre pdf de projet.
 
