@@ -5,7 +5,8 @@ Created on Sun Feb 28 09:44:20 2021
 @author: Thierry et Diana
 """
 #ACTTGATC
-
+import sys
+sys.path.append("subparts/")
 from BWT import cryptage
 from BWT import decryptage
 from huffman import compression_huffman
@@ -154,9 +155,22 @@ def recovery_dict(dict_string:str):
         i += 1
     return binary_dict
 
+##############################################################################
+def check_dollars(sequence_file:str):
+    """
+    This function allows to know if the file sequence is encrypted or normal
+    """
+    for character in sequence_file:
+        if character == "$":
+            return True    
+    return False
+
 ##############################################################################    
 def bwt_check(buttonId:str):
     """
+    This function makes it possible to recover for each of the buttons where 
+    the sequence to be analysed comes from. In this case it is for 
+    the "Encryption" and "Decryption" buttons
     """
     global  button
     global original_seq, list_pattern, list_pattern_sort, seq_fasta
@@ -169,21 +183,46 @@ def bwt_check(buttonId:str):
             original_seq = seq_fasta
         elif path.exists("Results/decrypt_sequence.txt"):
             with open("Results/decrypt_sequence.txt", "r") as file_encrypt:
-                original_seq += file_encrypt.readline().strip()
+                original_seq = file_encrypt.readline().strip()
+        elif path.exists("Results/decompress_sequence.txt"):
+            with open("Results/decompress_sequence.txt", "r") as file_decomp:
+                test_seq = file_decomp.readline().strip()
+                if check_dollars(test_seq) == False:
+                    original_seq = test_seq
+                else:
+                    original_seq = ""
+                    error("Please give a sequence to encrypted")
         else:
             error("Please give a sequence to encrypted")
+        #This condition makes it possible to decide whether to launch the analysis or not
         if original_seq != "":
             list_pattern, list_pattern_sort, bwt = cryptage(original_seq.upper())
     elif button == "Decryption":
         if path.exists("Results/encrypt_sequence.txt"):
             with open("Results/encrypt_sequence.txt", "r") as file_decrypt:
-                    bwt = file_decrypt.readline().strip()
-                    seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
+                bwt = file_decrypt.readline().strip()
+                seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
+        elif path.exists("Results/decompress_sequence.txt"):
+            with open("Results/decompress_sequence.txt", "r") as file_decomp2:
+                test_seq = file_decomp2.readline().strip()
+                if check_dollars(test_seq) == True:
+                    bwt = test_seq
+                else:
+                    error("The encryption file does not exist")
+        #This function makes it possible to recover for each of the buttons where the sequence to be analysed comes from.
+        if bwt != "":
+            seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
+                
         else:
             error("The encryption file does not exist")
                 
 ##############################################################################
 def huffman_check(buttonId:str):
+    """
+    This function makes it possible to recover for each of the buttons where 
+    the sequence to be analysed comes from. In this case it is for 
+    the "Compression" and "Decompression" buttons
+    """
     global button, seq_fasta, origin_seq
     global given_sequence, binary_sequence, binary_dict, add_zero
     global decompress_seq, compress_seq
@@ -193,14 +232,18 @@ def huffman_check(buttonId:str):
             origin_seq = sequence.get("1.0", "end-1c")
         elif seq_fasta != "":
             origin_seq = seq_fasta
-        elif path.exists("Results/decrypt_sequence.txt"):
-            with open("Results/decrypt_sequence.txt", "r") as file_encrypt:
+        elif path.exists("Results/encrypt_sequence.txt"):
+            with open("Results/encrypt_sequence.txt", "r") as file_encrypt:
                 origin_seq = file_encrypt.readline().strip()
+        elif path.exists("Results/decrypt_sequence.txt"):
+            with open("Results/decrypt_sequence.txt", "r") as file_decrypt:
+                origin_seq = file_decrypt.readline().strip()
         elif path.exists("Results/decompress_sequence.txt"):
             with open("Results/decompress_sequence.txt", "r") as file_decompression:
                 origin_seq = file_decompression.readline().strip()
         else:
             error("Please give a study sequence")
+        #This condition makes it possible to decide whether to launch the analysis or not
         if origin_seq != "":
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(origin_seq.upper())
     elif button == "Decompression" :
@@ -219,6 +262,11 @@ def huffman_check(buttonId:str):
             
 ###############################################################################
 def duo_check(buttonId:str):
+    """
+    This function makes it possible to recover for each of the buttons where 
+    the sequence to be analysed comes from. In this case it is for 
+    the "Encryption/Compression" and "Decompression/Decryption" buttons
+    """
     global button, seq_fasta, origin_seq
     global bwt, list_pattern, list_pattern_sort
     global given_sequence, binary_dict, compress_seq, add_zero, binary_sequence
@@ -237,6 +285,7 @@ def duo_check(buttonId:str):
                 origin_seq = file_duo.readline().strip()
         else:
             error("Please give a study sequence")
+        #This condition makes it possible to decide whether to launch the analysis or not
         if origin_seq != "":
             list_pattern, list_pattern_sort, bwt = cryptage(origin_seq.upper())
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(bwt)
@@ -250,6 +299,7 @@ def duo_check(buttonId:str):
                 add_zero = int(process_file2[0].strip())
                 dico_string = process_file2[1]
                 binary_dict = recovery_dict(dico_string)
+            #This condition makes it possible to decide whether to launch the analysis or not
             if compress_seq != "" and add_zero != None and binary_dict != {}:
                 binary_sequence, decompress_seq = decompression_huffman(compress_seq, add_zero, binary_dict)
                 seq_decrypt, list_decrypt, list_decrypt_step = decryptage(decompress_seq)
@@ -328,7 +378,8 @@ def display_step_decomp():
 ##############################################################################
 def encryption():
     """
-    
+    This function allows you to decide for encryption which window should be 
+    displayed according to the selected radio button
     """
     global compteur, compteur2
     global list_pattern, list_pattern_sort, bwt
@@ -344,14 +395,16 @@ def encryption():
         else:
             win_step.deiconify()
             title_bwt.pack()
-            display_step_encrypt()
             button_pass_final.configure(text = "Pass", command = pass_step_bwt)
             button_pass_final.pack()
+            display_step_encrypt()
+            
         
 ##############################################################################
 def decryption():
     """
-    
+    This function allows you to decide for decryption which window 
+    should be displayed according to the selected radio button
     """
     global seq_decrypt, list_decrypt, compteur, compteur2
     bwt_check(decryption["text"])
@@ -365,15 +418,17 @@ def decryption():
         else:
             win_step.deiconify()
             title_bwt.pack()
-            display_step_decrypt()
             button_pass_final.configure(text = "Pass", command = pass_step_bwt)
             button_pass_final.pack()
+            display_step_decrypt()
+            
         
 
 ##############################################################################
 def compression():
     """
-    
+    This function allows to decide for the compression which window should be 
+    displayed according to the selected radio button
     """
     global given_sequence, binary_sequence, compress_seq
     global list_compress, compteur_huffman, compteur_huffman2
@@ -398,7 +453,8 @@ def compression():
 ##############################################################################
 def decompression():
     """
-    
+    This function allows to decide for the decompression which window should be 
+    displayed according to the selected radio button
     """
     global compress_seq, decompress_seq, binary_sequence, compteur_huffman
     global list_decompress, compteur_huffman2
@@ -446,12 +502,13 @@ def encrypt_compress():
             button_no_step.pack()
         else:
             win_step.deiconify()
+            button_pass_final.configure(text = "Pass", command = pass_duo)
+            button_pass_final.pack()
             title_bwt.pack()
             display_step_encrypt()
             title_huffman.pack()
             display_step_comp()
-            button_pass_final.configure(text = "Pass", command = pass_duo)
-            button_pass_final.pack()
+            
             
 ##############################################################################
 def decompress_decrypt():
@@ -753,6 +810,8 @@ def pass_duo():
     hidden()
     string_bwt = ""
     string_huffman = ""
+    button_pass_final.configure(text="Save", command=save_duo)
+    button_pass_final.pack()
     if button == "Encryption/compression":
         string_bwt = loop(list_pattern_sort)
         string_huffman = loop(list_compress[0:-1])
@@ -783,8 +842,7 @@ def pass_duo():
         lab_pass.pack()
         lab_step.pack()
         seq_step.pack()
-    button_pass_final.configure(text="Save", command=save_duo)
-    button_pass_final.pack()
+        
 ##############################################################################
 def save_bwt():
     """
@@ -865,7 +923,7 @@ def browse():
 
     
 
-#Création de la fenêtre principal
+#Creating the main window and its configuration
 main_win = Tk()
 main_win.title("Projet_Algo")
 main_win.geometry()
@@ -874,27 +932,29 @@ color = "#5bc2eb"
 main_win.configure(bg=color)
 main_win.protocol("WM_DELETE_WINDOW", destroy)
 
-#Création et element de la fenetre "sans étape"
+#Creation and element of the "no step" window
 win_no_step=Toplevel(main_win)
+win_no_step.title("No Step")
 win_no_step.withdraw()
 seq_no_step = Label(win_no_step)
 seq_no_step2 = Label(win_no_step)
 button_no_step = Button(win_no_step, text="Save")
 win_no_step.protocol("WM_DELETE_WINDOW", red_cross_win_no_step)
 
-#Creation et element de la fenetre "avec étape"
+#Creation and element of the window "with step".
 font = font.Font(size = 14, weight = "bold")
 win_step = Toplevel(main_win)
+win_step.title("With step")
 win_step.withdraw()
-text_step = Text(win_step, height=0, width=0)
-text_step2 = Text(win_step, height=0, width=0)
-text_sort = Text(win_step,  height=0, width=0)
+text_step = Text(win_step)
+text_step2 = Text(win_step)
+text_sort = Text(win_step)
 title_bwt = Label(win_step, text = "The steps BWT", font=font)
 title_huffman = Label(win_step, text = "The steps Huffman", font=font)
 button_step = Button(win_step, width=20)
 button_step2 = Button(win_step, width = 20)
-button_pass_final = Button(win_step, text="Pass")
-button_pass2 = Button(win_step, text="Pass")
+button_pass_final = Button(win_step, text="Pass", width = 20)
+button_pass2 = Button(win_step, text="Pass", width = 20)
 lab_pass = Label(win_step, text="")
 lab_pass2 = Label(win_step, text="")
 lab_step = Label(win_step)
@@ -902,7 +962,7 @@ seq_step = Label(win_step)
 seq_step2 = Label(win_step)
 win_step.protocol("WM_DELETE_WINDOW", red_cross_win_step)
 
-#variable bwt
+#global variable bwt
 original_seq = ""
 compteur = 0
 compteur2 = 1
@@ -917,7 +977,7 @@ list_decrypt_step = []
 seq_fasta = ""
 button = ""
 
-#variable huffman
+#global variable huffman
 origin_seq = ""
 given_sequence = ""
 binary_sequence = ""
@@ -928,7 +988,7 @@ add_zero = 0
 list_compress = []
 list_decompress = []
 
-
+#Main window widgets
 step = StringVar()
 step.set("no step")
 no_step = Radiobutton(main_win, text= "No step", variable=step, value="no step", bg = color, font=font, activebackground = color)
@@ -948,13 +1008,9 @@ space3 = Label(main_win, bg = color)
 space4 = Label(main_win, bg = color)
 space5 = Label(main_win, bg = color)
 
-
-
+#Creating the grid to place the widgets in the main window
 no_step.grid(row = 0, column = 1, columnspan = 2)
 with_step.grid(row = 0, column = 4, columnspan = 2)
-
-
-
 space1.grid(row = 1, column = 0, columnspan= 7, sticky="we")
 sequence.grid(row = 2, rowspan = 3, column = 2, columnspan= 3)
 space2.grid(row=5, column = 0, columnspan = 7, sticky="we")
@@ -970,4 +1026,5 @@ encrypt_compress.grid(row =10 , column = 1, columnspan=2)
 decompress_decryp.grid(row= 10, column= 4, columnspan = 2)
 space5.grid(row=11, column = 0, columnspan = 7, sticky = "we")
 
+#Launching the main window and its Toplevels
 main_win.mainloop()

@@ -7,6 +7,19 @@ Pour lancer l'interface du projet et accéder au logiciel:
 
 python3 Interface_project.py
 
+Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquences choisies celle de votre pdf de projet.
+
+Pour la transformée de Burrows Weeler:
+
+python3 subparts/BWT.py
+
+
+Pour l'Algorithme d'Huffman:
+
+python3 subparts/huffman.py
+
+
+
 #########################
 FONCTIONNEMENT
 #########################
@@ -30,3 +43,11 @@ Cependant une fois que vous avez enregistrer votre séquence avec les boutons En
 ########################
 COMMENTAIRES 
 ########################
+
+Certaines fonctions de l'interface se ressemblent fortement, je suis conscient que j'aurai pu les factoriser en une seule cependant j'ai préféré cette décomposition pour la flexibité de l'affichage avec "pack()" qui aurait été plus complexe pour moins selon les séquences à analyser.
+
+
+
+
+
+
