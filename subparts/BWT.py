@@ -6,7 +6,7 @@ Created on Tue Feb 16 15:58:34 2021
 @author: thierry
 """
 
-# from pandas import DataFrame
+
 ###############################################################################
 def cryptage(sequence : str):
     """ 
