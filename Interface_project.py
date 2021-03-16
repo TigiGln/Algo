@@ -40,6 +40,7 @@ showwarning:informs the user of the problem to continue the analysis
 withdraw: allows to put in icon the window without really closing it
 deiconify: allows to redisplay the window 
 get() ou cget(): retrieves the string of the desired widget option
+delete(): removes all lines from the Text widget
 """
 
 ##############################################################################
@@ -143,8 +144,8 @@ def red_cross_win_no_step():
     Manages the closing of the window without step through the cross
     """
     hidden()
-    win_no_step.withdraw()
     delete_var()
+    win_no_step.withdraw()
 
 ##############################################################################    
 def red_cross_win_step():
@@ -152,8 +153,8 @@ def red_cross_win_step():
     Manages the closing of the window with step by step cross
     """
     hidden()
-    win_step.withdraw()
     delete_var()
+    win_step.withdraw()
     
 ##############################################################################
 def recovery_dict(dict_string:str):
@@ -186,7 +187,7 @@ def check_seq(sequence_file:str):
     This function allows to check the characters of the sequence by 
     matching them with a regular expression (formatting)
     """
-    seq = re.compile('^[A-Z, $]+$')
+    seq = re.compile('^[A-Z]+$')
     if seq.match(sequence_file):
         return True
     return False
@@ -337,7 +338,7 @@ def duo_check_encrypt():
         error("Please give a study sequence")
     #This condition makes it possible to decide whether to launch the analysis or not
     if origin_seq != "":
-        if not check_dollars(original_seq) and check_seq(original_seq):
+        if not check_dollars(origin_seq) and check_seq(origin_seq):
             list_pattern, list_pattern_sort, bwt = cryptage(origin_seq.upper())
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(bwt)
         else:
@@ -975,6 +976,7 @@ def save_duo():
     win_no_step.withdraw()
     win_step.withdraw()
     delete_var()
+
 ##############################################################################
 def browse():
     """

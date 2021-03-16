@@ -1,5 +1,9 @@
 # Projet d'Algorithmique
 
+Réalisé par Thierry Galliano
+
+M1 DLAD 2020-2021
+
 ##########################
 
 Dependances
@@ -7,7 +11,12 @@ Dependances
 #########################
 
 Bibliothèque Tkinter
+
 sudo apt-get install python3-tk
+
+bibliothèque "re" pour les regex
+
+pip install regex
 
 
 #########################
