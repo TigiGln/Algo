@@ -2,7 +2,7 @@
 """
 Created on Sun Feb 28 09:44:20 2021
 
-@author: Thierry et Diana
+@author: Thierry Galliano
 """
 #ACTTGATC
 from sys import path
@@ -13,6 +13,7 @@ from huffman import compression_huffman
 from huffman import decompression_huffman
 from os import path
 from os import mkdir
+import re
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import BOTH
@@ -26,6 +27,20 @@ from tkinter import Tk
 from tkinter import Toplevel
 from tkinter.messagebox import showwarning
 from tkinter.filedialog import askopenfilename
+
+"""
+redundancy of methods for widgets:
+pack():Method to display the widgets one after the other according to a chosen axis (from top to bottom by default)
+pack_forget: allows to hide widgets
+grid(): Method to display widgets arranged in a grid
+insert(): allows you to insert elements to a Text widget
+configure(): allows you to modify the options of a widget according to the steps
+state: changes the writing and reading status of the widget
+showwarning:informs the user of the problem to continue the analysis
+withdraw: allows to put in icon the window without really closing it
+deiconify: allows to redisplay the window 
+get() ou cget(): retrieves the string of the desired widget option
+"""
 
 ##############################################################################
 def delete_var():
@@ -165,180 +180,205 @@ def check_dollars(sequence_file:str):
             return True    
     return False
 
+###############################################################################
+def check_seq(sequence_file:str):
+    """
+    This function allows to check the characters of the sequence by 
+    matching them with a regular expression (formatting)
+    """
+    seq = re.compile('^[A-Z, $]+$')
+    if seq.match(sequence_file):
+        return True
+    return False
+
 ##############################################################################    
-def bwt_check(buttonId:str):
+def bwt_check_encryption():
     """
-    This function makes it possible to recover for each of the buttons where 
-    the sequence to be analysed comes from. In this case it is for 
-    the "Encryption" and "Decryption" buttons
+    This function allows to determine the source according to the priority 
+    to recover the sequence to be encrypted
     """
-    global  button
-    global original_seq, list_pattern, list_pattern_sort, seq_fasta
-    global seq_decrypt, list_decrypt, bwt, list_decrypt_step
-    button = buttonId
-    if button == "Encryption":
-        if sequence.get("1.0", "end-1c") != "" :#check Text widget
-            original_seq = sequence.get("1.0", "end-1c")
-        elif seq_fasta != "":#check open file
-            original_seq = seq_fasta.strip()
-        elif path.exists("Results/decrypt_sequence.txt"):#check decrypt file
-            with open("Results/decrypt_sequence.txt", "r") as file_decrypt:
-                original_seq = file_decrypt.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decompress_sequence.txt"):#check decompress file
-            with open("Results/decompress_sequence.txt", "r") as file_decomp:
-                original_seq  = file_decomp.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decompress_decrypt_sequence.txt"):#check decrypt file
-            with open("Results/decompress_decrypt_sequence.txt", "r") as file_decomp_decrypt:
-                original_seq = file_decomp_decrypt.readline().strip()#retrieve the first line of the file
+    global original_seq, list_pattern, list_pattern_sort, seq_fasta, bwt, button
+    button = "Encryption"
+    if sequence.get("1.0", "end-1c") != "" :#check Text widget
+        original_seq = sequence.get("1.0", "end-1c")
+    elif seq_fasta != "":#check open file
+        original_seq = seq_fasta.strip()
+    elif path.exists("Results/decrypt_sequence.txt"):#check file exist
+        with open("Results/decrypt_sequence.txt", "r") as file_decrypt:
+            original_seq = file_decrypt.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_sequence.txt"):#check decompress file
+        with open("Results/decompress_sequence.txt", "r") as file_decomp:
+            original_seq  = file_decomp.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_decrypt_sequence.txt"):#check file exist
+        with open("Results/decompress_decrypt_sequence.txt", "r") as file_decomp_decrypt:
+            original_seq = file_decomp_decrypt.readline().strip()#retrieve the first line of the file
+    else:
+        error("Please give a sequence to encrypted")
+    #This condition makes it possible to decide whether to launch the analysis or not
+    if original_seq != "":
+        if not check_dollars(original_seq) and check_seq(original_seq):#check format sequence
+            list_pattern, list_pattern_sort, bwt = cryptage(original_seq.upper())
         else:
-            error("Please give a sequence to encrypted")
-        #This condition makes it possible to decide whether to launch the analysis or not
-        if original_seq != "":
-            if not check_dollars(original_seq):#check not encrypt sequence
-                list_pattern, list_pattern_sort, bwt = cryptage(original_seq.upper())
-            else:
-                error("This sequence is not already encrypt")
-    elif button == "Decryption":
-        if seq_fasta != "":
-            bwt = seq_fasta.strip()
-        elif path.exists("Results/encrypt_sequence.txt"):
-            with open("Results/encrypt_sequence.txt", "r") as file_decrypt:
-                bwt = file_decrypt.readline().strip()#retrieve the first line of the file
-                seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
-        elif path.exists("Results/decompress_sequence.txt"):
-            with open("Results/decompress_sequence.txt", "r") as file_decomp2:
-                bwt = file_decomp2.readline().strip()#retrieve the first line of the file
-        #This function makes it possible to recover for each of the buttons where the sequence to be analysed comes from.
-        if bwt != "":
-            if check_dollars(bwt):
-                seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
-            else:
-                error("This sequence is not encrypt")
+            error("This sequence does not have the right format to be encrypted")
+                
+####################################################################################################
+def bwt_check_decryption():
+    """
+    This function allows to determine the source according to the priorities 
+    to recover the sequence to decrypt
+    """
+    global seq_decrypt, list_decrypt, bwt, list_decrypt_step, seq_fasta, button
+    button = "Decryption"              
+    if seq_fasta != "":#retrieve the file give
+        bwt = seq_fasta.strip()
+    elif path.exists("Results/encrypt_sequence.txt"): #check file exist
+        with open("Results/encrypt_sequence.txt", "r") as file_decrypt:
+            bwt = file_decrypt.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_sequence.txt"):
+        with open("Results/decompress_sequence.txt", "r") as file_decomp2:
+            bwt = file_decomp2.readline().strip()#retrieve the first line of the file
+    #This function makes it possible to recover for each of the buttons where the sequence to be analysed comes from.
+    if bwt != "":
+        if check_dollars(bwt):
+            seq_decrypt, list_decrypt, list_decrypt_step = decryptage(bwt)
         else:
-            error("The encryption file does not exist")
+            error("This sequence is not encrypt")
+    else:
+        error("The encryption file does not exist")
                 
 ##############################################################################
-def huffman_check(buttonId:str):
+def huffman_check_compression():
     """
-    This function makes it possible to recover for each of the buttons where 
-    the sequence to be analysed comes from. In this case it is for 
-    the "Compression" and "Decompression" buttons
+    This function allows to determine the source according to the priorities 
+    to recover the sequence to be compressed
     """
-    global button, seq_fasta, origin_seq
+    global seq_fasta, origin_seq, compress_seq, button
     global given_sequence, binary_sequence, binary_dict, add_zero
-    global decompress_seq, compress_seq
-    button = buttonId
-    dico_string = {}
-    if button == "Compression":
-        if sequence.get("1.0", "end-1c") != "" :
-            origin_seq = sequence.get("1.0", "end-1c")
-        elif seq_fasta != "":
-            origin_seq = seq_fasta.replace("\n", "")
-        elif path.exists("Results/encrypt_sequence.txt"):
-            with open("Results/encrypt_sequence.txt", "r") as file_encrypt:
-                origin_seq = file_encrypt.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decrypt_sequence.txt"):
-            with open("Results/decrypt_sequence.txt", "r") as file_decrypt:
-                origin_seq = file_decrypt.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decompress_sequence.txt"):
-            with open("Results/decompress_sequence.txt", "r") as file_decompression:
-                origin_seq = file_decompression.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decompress_decrypt_sequence.txt"):    
-            with open("Results/decompress_decrypt_sequence.txt", "r") as file_decomp_decrypt:
-                origin_seq = file_decomp_decrypt.readline().strip()
-        else:
-            error("Please give a study sequence")
-        #This condition makes it possible to decide whether to launch the analysis or not
-        if origin_seq != "":
+    button = "Compression"
+    if sequence.get("1.0", "end-1c") != "" :
+        origin_seq = sequence.get("1.0", "end-1c")
+    elif seq_fasta != "":
+        origin_seq = seq_fasta.replace("\n", "")
+    elif path.exists("Results/encrypt_sequence.txt"):
+        with open("Results/encrypt_sequence.txt", "r") as file_encrypt:
+            origin_seq = file_encrypt.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decrypt_sequence.txt"):
+        with open("Results/decrypt_sequence.txt", "r") as file_decrypt:
+            origin_seq = file_decrypt.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_sequence.txt"):
+        with open("Results/decompress_sequence.txt", "r") as file_decompression:
+            origin_seq = file_decompression.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_decrypt_sequence.txt"):    
+        with open("Results/decompress_decrypt_sequence.txt", "r") as file_decomp_decrypt:
+            origin_seq = file_decomp_decrypt.readline().strip()
+    else:
+        error("Please give a study sequence")
+    #This condition makes it possible to decide whether to launch the analysis or not
+    if origin_seq != "":
+        if check_seq(origin_seq):
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(origin_seq.upper())
-    elif button == "Decompression" :
-        if seq_fasta != "":
-            process_file = seq_fasta.split("\n", maxsplit=1)
-            process_file1 = process_file[0].split("\t")
-            dico_string = process_file1[0].strip()
-            add_zero = int(process_file1[1].strip())
-            compress_seq = "".join(process_file[1:])
-        elif path.exists("Results/compress_sequence.txt"):
-            with open("Results/compress_sequence.txt", "r", encoding="utf-8") as file_compression:
-                process_file = file_compression.readlines()#retrieve all lines from the files
-                process_file1 = process_file[0].split("\t")
-                dico_string = process_file1[0].strip()
-                add_zero = int(process_file1[1].strip())
-                compress_seq = "".join(process_file[1:])
-        elif path.exists("Results/encrypt_compress_sequence.txt"):
-            with open("Results/encrypt_compress_sequence.txt", "r", encoding="utf-8") as file_encrypt_comp:
-                process_file = file_encrypt_comp.readlines()#retrieve all lines from the files
-                process_file1 = process_file[0].split("\t")
-                dico_string = process_file1[0].strip()
-                add_zero = int(process_file1[1].strip())
-                compress_seq = "".join(process_file[1:])
         else:
-            error("No file for decompression analysis")
-        if dico_string != {}:
-            binary_dict = recovery_dict(dico_string)
-        if compress_seq != "" and add_zero != None and binary_dict != {}:
-                binary_sequence, decompress_seq = decompression_huffman(compress_seq, add_zero, binary_dict)
-                seq_decrypt, list_decrypt, list_decrypt_step = decryptage(decompress_seq)
-                
+            error("This sequence can not to be compressed")
+#######################################################################################################    
+def huffman_check_decompression():
+    """
+    This function allows to determine the source according to the priority 
+    to recover the sequence to be decompressed
+    """
+    global decompress_seq, compress_seq, seq_fasta, binary_sequence, binary_dict, add_zero, button
+    button = "Decompression"
+    process_file = ""
+    dico_string = {}    
+    if seq_fasta != "":
+        if seq_fasta[0] == "{":
+            process_file = seq_fasta.split("\n", maxsplit=1)
+        else:
+            error("This sequence can not to be decompressed")
+    elif path.exists("Results/compress_sequence.txt"):
+        with open("Results/compress_sequence.txt", "r", encoding="utf-8") as file_compression:
+            process_file = file_compression.readlines()#retrieve all lines from the files
+    elif path.exists("Results/encrypt_compress_sequence.txt"):
+        with open("Results/encrypt_compress_sequence.txt", "r", encoding="utf-8") as file_encrypt_comp:
+            process_file = file_encrypt_comp.readlines()#retrieve all lines from the files
+    else:
+        error("No file for decompression analysis")
+    if process_file != "":
+        process_file1 = process_file[0].split("\t")
+        dico_string = process_file1[0].strip()
+        add_zero = int(process_file1[1].strip())
+        compress_seq = "".join(process_file[1:])
+    if dico_string != {}:
+        binary_dict = recovery_dict(dico_string)
+    if compress_seq != "" and add_zero != None and binary_dict != {}:
+        binary_sequence, decompress_seq = decompression_huffman(compress_seq, add_zero, binary_dict)
+        seq_decrypt, list_decrypt, list_decrypt_step = decryptage(decompress_seq)
                 
 ###############################################################################
-def duo_check(buttonId:str):
+def duo_check_encrypt():
     """
-    This function makes it possible to recover for each of the buttons where 
-    the sequence to be analysed comes from. In this case it is for 
-    the "Encryption/Compression" and "Decompression/Decryption" buttons
+    This function allows to determine the source according to the priority 
+    to recover the sequence to be encrypted then compressed
     """
-    global button, seq_fasta, origin_seq
+    global seq_fasta, origin_seq, button
     global bwt, list_pattern, list_pattern_sort
     global given_sequence, binary_dict, compress_seq, add_zero, binary_sequence
-    global decompress_seq, seq_decrypt, list_decrypt, list_decrypt_step
-    button = buttonId
+    button = "Encryption/compression"
+    if sequence.get("1.0", "end-1c") != "" :
+        origin_seq = sequence.get("1.0", "end-1c")
+    elif seq_fasta != "":
+        origin_seq = seq_fasta.replace("\n", "")
+    elif path.exists("Results/decrypt_sequence.txt"):
+        with open("Results/decrypt_sequence.txt", "r") as file_encrypt:
+            origin_seq = file_encrypt.readline().strip()#retrieve the first line of the file
+    elif path.exists("Results/decompress_decrypt_sequence.txt"):
+        with open("Results/decompress_decrypt_sequence.txt", "r") as file_duo:
+            origin_seq = file_duo.readline().strip()#retrieve the first line of the file
+    else:
+        error("Please give a study sequence")
+    #This condition makes it possible to decide whether to launch the analysis or not
+    if origin_seq != "":
+        if not check_dollars(original_seq) and check_seq(original_seq):
+            list_pattern, list_pattern_sort, bwt = cryptage(origin_seq.upper())
+            given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(bwt)
+        else:
+            error("The sequence is not already encrypt")
+                
+#######################################################################################
+def duo_check_decomp():
+    """
+    This function allows to determine the source according to the priorities 
+    to recover the sequence to be decompressed then decrypted
+    """
+    global seq_fasta, binary_dict, compress_seq, add_zero, binary_sequence
+    global decompress_seq, seq_decrypt, list_decrypt, list_decrypt_step, button
+    button = "Decompression/decryption"
+    process_file = ""
     dico_string = {}
-    if button == "Encryption/compression":
-        if sequence.get("1.0", "end-1c") != "" :
-            origin_seq = sequence.get("1.0", "end-1c")
-        elif seq_fasta != "":
-            origin_seq = seq_fasta.replace("\n", "")
-        elif path.exists("Results/decrypt_sequence.txt"):
-            with open("Results/decrypt_sequence.txt", "r") as file_encrypt:
-                origin_seq = file_encrypt.readline().strip()#retrieve the first line of the file
-        elif path.exists("Results/decompress_decrypt_sequence.txt"):
-            with open("Results/decompress_decrypt_sequence.txt", "r") as file_duo:
-                origin_seq = file_duo.readline().strip()#retrieve the first line of the file
-        else:
-            error("Please give a study sequence")
-        #This condition makes it possible to decide whether to launch the analysis or not
-        if origin_seq != "":
-            if not check_dollars(original_seq):
-                list_pattern, list_pattern_sort, bwt = cryptage(origin_seq.upper())
-                given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(bwt)
-            else:
-                error("The sequence is not already encrypt")
-    elif button == "Decompression/decryption":
-        if seq_fasta != "":
+    if seq_fasta != "":
+        if seq_fasta[0] == "{":
             process_file = seq_fasta.split("\n", maxsplit=1)
-            process_file1 = process_file[0].split("\t")
-            dico_string = process_file1[0].strip()
-            add_zero = int(process_file1[1].strip())
-            compress_seq = "".join(process_file[1:])
-        elif path.exists("Results/encrypt_compress_sequence.txt"):
-            with open("Results/encrypt_compress_sequence.txt", "r", encoding="utf-8") as file_duo2:
-                process_file = file_duo2.readlines()#retrieve all lines from the files
-                process_file1 = process_file[0].split("\t")
-                dico_string = process_file1[0].strip()
-                add_zero = int(process_file1[1].strip())
-                compress_seq = "".join(process_file[1:])
-        if dico_string != {}:
-            binary_dict = recovery_dict(dico_string)
-        #This condition makes it possible to decide whether to launch the analysis or not
-        if compress_seq != "" and add_zero != None and binary_dict != {}:
-            binary_sequence, decompress_seq = decompression_huffman(compress_seq, add_zero, binary_dict)
-            if check_dollars(decompress_seq):
-                seq_decrypt, list_decrypt, list_decrypt_step = decryptage(decompress_seq)
-            else:
-                error("The file is not encrypt")
         else:
-            error("Please re-encrypt/re_compress")
+            error("This sequence can not to be decompressed")
+    elif path.exists("Results/encrypt_compress_sequence.txt"):
+        with open("Results/encrypt_compress_sequence.txt", "r", encoding="utf-8") as file_duo2:
+            process_file = file_duo2.readlines()#retrieve all lines from the files
+    else:
+        error("Please re-encrypt/re_compress")       
+    if process_file != "":
+        process_file1 = process_file[0].split("\t")
+        dico_string = process_file1[0].strip()
+        add_zero = int(process_file1[1].strip())
+        compress_seq = "".join(process_file[1:])#join of the different lines of the file
+    if dico_string != {}:
+        binary_dict = recovery_dict(dico_string)
+    #This condition makes it possible to decide whether to launch the analysis or not
+    if compress_seq != "" and add_zero != None and binary_dict != {}:
+        binary_sequence, decompress_seq = decompression_huffman(compress_seq, add_zero, binary_dict)
+        if check_dollars(decompress_seq):
+            seq_decrypt, list_decrypt, list_decrypt_step = decryptage(decompress_seq)
+        else:
+            error("The file is not encrypt")
+    
                   
 ###############################################################################
 def display_step_encrypt():
@@ -347,18 +387,24 @@ def display_step_encrypt():
     """
     global compteur, compteur2
     global list_pattern, list_pattern_sort, bwt
+    #configuration of the window size according to the given sequence
     text_step.configure(height = compteur2 , width = len(list_pattern[0]))
+    #Insert the given sequence with the special character for encryption
     text_step.insert("1.0", list_pattern[compteur] + "\n")
-    text_step.delete("end-1c")
-    text_step.config(state = DISABLED)
-    text_sort.config(state = NORMAL)
+    text_step.delete("end-1c")#deletion of the final line break
+    text_step.config(state = DISABLED)#allows the user to neither write nor delete
+    text_sort.config(state = NORMAL)#allows to write in the widget
+    #Insert our sort sequence for the final step
     text_sort.insert(str(compteur2) + ".0", list_pattern_sort[compteur] + "\n")
+    #Color the last letter of each line
     text_sort.tag_configure('red', foreground='red')
     text_sort.tag_add('red', str(compteur2) + '.' + str(len(bwt)-1))
     text_sort.config(state = DISABLED)
+    #Change the function and name of the button
     button_step.configure(text="Next BWT", command= next_bwt)
-    button_step.pack()
+    button_step.pack()#the pack method allows to display the widgets
     text_step.pack(padx=2)
+    #Incrementing the counters to advance in the steps
     compteur += 1
     compteur2 += 1
     
@@ -368,6 +414,7 @@ def display_step_decrypt():
     Display of the first step of the decoding of the sequence
     """
     global seq_decrypt, list_decrypt, compteur, compteur2, list_decrypt_step
+    #Add the first letter of each line of our decryption list
     for i in range(0, len(seq_decrypt)+1, 1):
         text_step.configure(height = i+1 , width = i+1, state = NORMAL)
         text_step.insert( str(i+1) + "." + str(len(list_decrypt_step[i])), list_decrypt_step[compteur][i] + "\n")
@@ -416,7 +463,7 @@ def encryption():
     """
     global compteur, compteur2
     global list_pattern, list_pattern_sort, bwt
-    bwt_check(encryption["text"])
+    bwt_check_encryption()
     if bwt != "":
         if step.get() == "no step":
             win_no_step.deiconify()
@@ -440,7 +487,7 @@ def decryption():
     should be displayed according to the selected radio button
     """
     global seq_decrypt, list_decrypt, compteur, compteur2
-    bwt_check(decryption["text"])
+    bwt_check_decryption()
     if seq_decrypt != "":
         if step.get() == "no step":
             win_no_step.deiconify()
@@ -465,14 +512,14 @@ def compression():
     """
     global given_sequence, binary_sequence, compress_seq
     global list_compress, compteur_huffman, compteur_huffman2
-    huffman_check(compression["text"])
+    huffman_check_compression()
     if given_sequence != "":
         list_compress = ["Your initial sequence: \n" + given_sequence,
                          "Your binary sequence: \n" + binary_sequence,
                          "Your compressed sequence: \n", compress_seq]
         if step.get() == "no step":
             win_no_step.deiconify()
-            seq_no_step.configure(text = "Here is your compression sequence: \n" + compress_seq)
+            seq_no_step.configure(text = "Here is your compression sequence: \n" + str(compress_seq))
             button_no_step.configure(text="Save", command = save_huffman)
             seq_no_step.pack()
             button_no_step.pack()
@@ -492,7 +539,7 @@ def decompression():
     global compress_seq, decompress_seq, binary_sequence, compteur_huffman
     global list_decompress, compteur_huffman2
     compteur_huffman2 = 1
-    huffman_check(decompression["text"])
+    huffman_check_decompression()
     if compress_seq != "":
         list_decompress = ["Your compressed sequence: \n" + compress_seq,
                            "Your binary sequence: \n"+ binary_sequence,
@@ -519,8 +566,7 @@ def encrypt_compress():
     global original_seq, list_pattern, list_pattern_sort, bwt
     global given_sequence, binary_sequence, compress_seq, list_compress
     compteur_huffman2 = 1
-    button_press = encrypt_compress["text"]
-    duo_check(button_press)
+    duo_check_encrypt()
     if bwt != "":
         list_compress = ["Your initial sequence: \n" + given_sequence,
                          "Your binary sequence: \n" + binary_sequence,
@@ -551,8 +597,7 @@ def decompress_decrypt():
     global compteur, compteur2
     global compress_seq, decompress_seq, binary_sequence, list_decompress
     global seq_decrypt, list_decrypt
-    button_press = decompress_decryp["text"]
-    duo_check(button_press)
+    duo_check_decomp()
     list_decompress = ["Your compressed sequence: \n" + compress_seq,
                            "Your binary sequence: \n"+ binary_sequence,
                            "Your decompressed sequence: \n", decompress_seq]
@@ -568,12 +613,13 @@ def decompress_decrypt():
             button_no_step.pack()
         else:
             win_step.deiconify()
+            button_pass_final.configure(text = "Pass", command = pass_duo)
+            button_pass_final.pack()
             title_huffman.pack()
             display_step_decomp()
             title_bwt.pack()
             display_step_decrypt()
-            button_pass_final.configure(text = "Pass", command = pass_duo)
-            button_pass_final.pack()
+            
        
 ############################################################################### 
 def next_bwt():
@@ -585,11 +631,14 @@ def next_bwt():
     global list_decrypt, seq_decrypt, list_decrypt_step
     if button == "Encryption" or button == "Encryption/compression":
         text_step.config(state = NORMAL)
+        #modification of the widget size according to the sequence and the progress of the analysis
         text_step.configure(height = compteur2, width = len(list_pattern[0]))
+        #Insertion of a step each time the button is pressed
         text_step.insert(str(compteur2) + ".0", list_pattern[compteur] + "\n")
         text_step.delete("end-1c")
         text_step.config(state = DISABLED)
         text_sort.config(state = NORMAL)
+        #Inserting a step on the final widget to color the desired letter step by step
         text_sort.insert(str(compteur2) + ".0", list_pattern_sort[compteur] + "\n")
         text_sort.tag_configure('red', foreground='red')
         text_sort.tag_add('red', str(compteur2) + '.' + str(len(bwt)-1))

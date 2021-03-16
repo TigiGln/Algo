@@ -3,7 +3,7 @@
 """
 Created on Tue Feb 16 15:58:34 2021
 
-@author: thierry
+@author: Thierry Galliano
 """
 
 

@@ -2,7 +2,7 @@
 """
 Created on Sun Feb 28 15:50:31 2021
 
-@author: Thierry et Diana
+@author: Thierry Galliano
 """
 
 

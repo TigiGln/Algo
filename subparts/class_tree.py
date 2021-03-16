@@ -2,7 +2,7 @@
 """
 Created on Tue Feb 23 14:56:04 2021
 
-@author: Thierry et Diana
+@author: Thierry Galliano
 """
 
 class Node:
