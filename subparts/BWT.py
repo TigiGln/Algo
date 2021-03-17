@@ -5,7 +5,7 @@ Created on Tue Feb 16 15:58:34 2021
 
 @author: Thierry Galliano
 """
-
+from sys import argv
 
 ###############################################################################
 def cryptage(sequence : str):
@@ -57,12 +57,14 @@ def decryptage(bwt:str):
 ##############################################################################           
 
 if __name__ == "__main__":
-    liste_pattern = []
-    print("Encryption using the BWT method: ")
-    liste_pattern, liste_pattern2, bwt = cryptage("ACTTGATC")
-    print(bwt, "\n")
-    print("Decryption: ")
-    seq, liste, liste2 = decryptage(bwt)
-    print(seq)
+    if len(argv) == 2:
+        print("Encryption using the BWT method: ")
+        liste_pattern, liste_pattern2, bwt = cryptage(argv[1].upper())
+        print(bwt, "\n")
+        print("Decryption using the BWT method: ")
+        seq, liste, liste2 = decryptage(bwt)
+        print(seq)
+    else:
+        print("Please enter a sequence or respect the number of options")
 
 

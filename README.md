@@ -33,12 +33,15 @@ Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec
 
 Pour la transformée de Burrows Weeler:
 
-python3 subparts/BWT.py
+python3 subparts/BWT.py ACTTGATC
 
 
 Pour l'Algorithme d'Huffman:
 
-python3 subparts/huffman.py
+python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
+
+
+Pour BWT.py et huffman.py vous pouvez mettre à la place de la séquence donnée celle que vous souhaitez. N'oubliez pas l'espace entre le nom du fichier et la séquence passé 
 
 
 

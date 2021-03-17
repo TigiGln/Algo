@@ -8,7 +8,7 @@ Created on Sun Feb 28 15:50:31 2021
 
 from class_tree import Tree
 from class_tree import Node
-
+from sys import argv
 
 
 ###############################################################################
@@ -140,15 +140,21 @@ def decompression_huffman(compress_seq:str, add_binary:int, dict_seq_binary:dict
 
 #######################################################################################
 if __name__ == "__main__":
-    selected_sequence = "NNTNACTTNGNNGTTNCCTATACCT"
-    origin_seq, dict_binary, sequence, add_binary, seq_bin = compression_huffman(selected_sequence)
-    print(origin_seq)
-    print(seq_bin)
-    print(sequence)
-    print(dict_binary)
-    seq_decomp_bin, seq_fin= decompression_huffman(sequence, add_binary, dict_binary)
-    print(sequence)
-    print(seq_decomp_bin)
-    print(seq_fin)
+    if len(argv) == 2:
+        selected_sequence = argv[1]
+        print("Huffman compression: ")
+        origin_seq, dict_binary, sequence, add_binary, seq_bin = compression_huffman(selected_sequence.upper())
+        print("Your sequence: " + origin_seq)
+        print("Its binary sequence: " + seq_bin)
+        print("Your sequence compressed: " + sequence + "\n")
+        print("Huffman decompression: " )
+        seq_decomp_bin, seq_fin= decompression_huffman(sequence, add_binary, dict_binary)
+        print("Your sequence compressed: " + sequence)
+        print("Its binary sequence: " + seq_decomp_bin)
+        print("Your final sequence decompressed: " + seq_fin)
+    else:
+        print("Please enter a sequence or respect the number of options")
+
+
 
       
