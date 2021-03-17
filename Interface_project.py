@@ -217,7 +217,7 @@ def bwt_check_encryption():
         error("Please give a sequence to encrypted")
     #This condition makes it possible to decide whether to launch the analysis or not
     if original_seq != "":
-        if not check_dollars(original_seq) and check_seq(original_seq):#check format sequence
+        if not check_dollars(original_seq) and check_seq(original_seq.upper()):#check format sequence
             list_pattern, list_pattern_sort, bwt = cryptage(original_seq.upper())
         else:
             error("This sequence does not have the right format to be encrypted")
@@ -276,7 +276,7 @@ def huffman_check_compression():
         error("Please give a study sequence")
     #This condition makes it possible to decide whether to launch the analysis or not
     if origin_seq != "":
-        if check_seq(origin_seq):
+        if check_seq(origin_seq.upper()):
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(origin_seq.upper())
         else:
             error("This sequence can not to be compressed")
@@ -338,7 +338,7 @@ def duo_check_encrypt():
         error("Please give a study sequence")
     #This condition makes it possible to decide whether to launch the analysis or not
     if origin_seq != "":
-        if not check_dollars(origin_seq) and check_seq(origin_seq):
+        if not check_dollars(origin_seq) and check_seq(origin_seq.upper()):
             list_pattern, list_pattern_sort, bwt = cryptage(origin_seq.upper())
             given_sequence, binary_dict, compress_seq, add_zero, binary_sequence = compression_huffman(bwt)
         else:
@@ -751,8 +751,7 @@ def result_huffman():
         text_step2.insert(str(compteur_huffman2-1) + ".0", list_compress[-1])
         text_step2.tag_configure('red', foreground='red')
         text_step2.tag_add('red', str(compteur_huffman2-1) + ".0", str(compteur_huffman2-1) 
-                          + "." + str(len(list_compress[-1])))
-        
+                          + "." + str(len(list_compress[-1])))      
     elif button == "Decompression":
         text_step2.insert(str(compteur_huffman2-1) + ".0", list_decompress[-1])
         text_step2.tag_configure('red', foreground='red')
@@ -786,8 +785,7 @@ def result_duo_bwt():
         text_sort.pack()
         title_huffman.pack()
         button_step2.pack()
-        text_step2.pack()
-        
+        text_step2.pack()    
     else:
         line = 0
         for elt in list_decrypt:
