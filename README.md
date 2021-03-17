@@ -4,11 +4,11 @@ Réalisé par Thierry Galliano
 
 M1 DLAD 2020-2021
 
-##########################
+################################################
 
-# Dependances
+## Dependances
 
-#########################
+################################################
 
 Bibliothèque Tkinter
 
@@ -19,40 +19,40 @@ bibliothèque "re" pour les regex
 pip install regex
 
 
-#########################
+###############################################
 
-# LANCEMENT DU PROJET
+## LANCEMENT DU PROJET
 
-#########################
+###############################################
 
 Pour lancer l'interface du projet et accéder au logiciel:
 
-## python3 Interface_project.py
+### python3 Interface_project.py
 
 Dans l'interface, vous pouvez utiliser n'importe quelle lettre de l'alphabet français sans espace
 
-###############################################################################################
+#############################################################################################
 Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquence choisie par défaut celle du pdf du projet mais vous pouvez changer cela à votre guise.
 
 Pour la transformée de Burrows Weeler:
 
-### python3 subparts/BWT.py ACTTGATC
+#### python3 subparts/BWT.py ACTTGATC
 
 
 Pour l'Algorithme d'Huffman:
 
-### python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
+#### python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
 
 
 
 
 
 
-#########################
+#############################################
 
-# FONCTIONNEMENT
+## FONCTIONNEMENT
 
-#########################
+#############################################
 
 Utilisation du logiciel:
 
@@ -68,15 +68,15 @@ Décryption: Pour la décrypter
 Encryption/Compression: Pour crypter et compresser le cryptage directement
 Decompression/Decryption: Pour décompresser et décrypter la séquence décompresser directement.
 
-Attention vous ne pouvez décompresser ou décrypter qu'une séquence enregistrer compresser ou crypter respectivement dans un fichier. Comme pour le bouton Décompression/Décryptage.
+Attention vous ne pouvez décompresser ou décrypter qu'une séquence enregistrer compresser ou crypter respectivement dans un fichier. Cela fonctionne pareil pour le bouton Décompression/Décryptage avec un fichier encrypter et compresser.
 
-Cependant une fois que vous avez enregistrer votre séquence avec les boutons Encryption, Compression et Encryption/Compression. Si vous souhaitez rester sur la même séquence vous pouvez utiliser les 6 boutons selon vos envies.
+Cependant une fois que vous avez enregistrer votre séquence avec les boutons Encryption, Compression et Encryption/Compression. Si vous souhaitez rester sur la même séquence vous pouvez utiliser les 6 boutons selon vos envies sans être obligé de recherger un fichier à chaque fois.
 
-########################
+###########################################
 
-# COMMENTAIRES 
+## COMMENTAIRES 
 
-########################
+###########################################
 
 Certaines fonctions de l'interface se ressemblent fortement, je suis conscient que j'aurai pu les factoriser en une seule cependant j'ai préféré cette décomposition pour la flexibité de l'affichage avec "pack()" qui aurait été plus complexe pour moi selon les séquences à analyser.
 
