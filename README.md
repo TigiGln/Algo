@@ -44,8 +44,7 @@ Pour l'Algorithme d'Huffman:
 #### python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
 
 
-
-
+Attention c'est option ne sont là que pour tester le code en arrière plan de l'interface pas pour enregistrer des fichiers ou faire votre analyse complète. Pour cela il y a l'interface du projet qui se suffit à elle seule.
 
 
 #############################################
