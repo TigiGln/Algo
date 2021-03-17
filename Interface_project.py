@@ -1001,13 +1001,14 @@ main_win = Tk()
 main_win.title("Projet_Algo")
 main_win.geometry()
 main_win.resizable(width=False, height=False)
-color = "#5bc2eb"
+color = "#9ccbd8"
 main_win.configure(bg=color)
 main_win.protocol("WM_DELETE_WINDOW", destroy)
 
 #Creation and element of the "no step" window
 win_no_step=Toplevel(main_win)
 win_no_step.title("No Step")
+win_no_step.configure(bg=color)
 win_no_step.withdraw()
 seq_no_step = Label(win_no_step)
 seq_no_step2 = Label(win_no_step)
@@ -1018,6 +1019,7 @@ win_no_step.protocol("WM_DELETE_WINDOW", red_cross_win_no_step)
 font = font.Font(size = 14, weight = "bold")
 win_step = Toplevel(main_win)
 win_step.title("With step")
+win_step.configure(bg=color)
 win_step.withdraw()
 text_step = Text(win_step)
 text_step2 = Text(win_step)

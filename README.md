@@ -6,7 +6,7 @@ M1 DLAD 2020-2021
 
 ##########################
 
-Dependances
+# Dependances
 
 #########################
 
@@ -21,33 +21,36 @@ pip install regex
 
 #########################
 
-## LANCEMENT DU PROJET
+# LANCEMENT DU PROJET
 
 #########################
 
 Pour lancer l'interface du projet et accéder au logiciel:
 
-### python3 Interface_project.py
+## python3 Interface_project.py
 
-Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquences choisies celle de votre pdf de projet.
+Dans l'interface, vous pouvez utiliser n'importe quelle lettre de l'alphabet français sans espace
+
+###############################################################################################
+Vous pouvez tester aussi de façon indépendante les parties BWT et HUFFMAN avec comme séquence choisie par défaut celle du pdf du projet mais vous pouvez changer cela à votre guise.
 
 Pour la transformée de Burrows Weeler:
 
-python3 subparts/BWT.py ACTTGATC
+### python3 subparts/BWT.py ACTTGATC
 
 
 Pour l'Algorithme d'Huffman:
 
-python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
+### python3 subparts/huffman.py NNTNACTTNGNNGTTNCCTATACCT
 
 
-Pour BWT.py et huffman.py vous pouvez mettre à la place de la séquence donnée celle que vous souhaitez. N'oubliez pas l'espace entre le nom du fichier et la séquence passé 
+
 
 
 
 #########################
 
-## FONCTIONNEMENT
+# FONCTIONNEMENT
 
 #########################
 
@@ -71,7 +74,7 @@ Cependant une fois que vous avez enregistrer votre séquence avec les boutons En
 
 ########################
 
-## COMMENTAIRES 
+# COMMENTAIRES 
 
 ########################
 
